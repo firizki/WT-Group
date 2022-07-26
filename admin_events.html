@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Admin Events</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <div class="align-middle top-of-the-page">
+    <a href="admin_home.html"><img src="images/food-sharing-icon.png" class="logo"></a>
+    <a href="admin_home.html" class="top-top">Food Sharing System</a>
+  </div>
+  <nav class="navbar" id="navbar">
+    <div>
+      <a href="admin_events.html" class="nav-opt"> Events</a>
+      <a href="admin_donations.html" class="nav-opt"> Donations</a>
+    </div>
+
+    <div class="profile-side">
+      <a href="admin_profile.html">Hi, ADMIN<img src="images/profile.png" class="icons"></a>
+      <a href="logout.html"><button class="btn btn-secondary">Logout</button></a>
+    </div>
+  </nav>
+  <div class="container py-2">
+    <div class="row py-2">
+      <div class="text-center col-md-10 offset-md-1">
+        <h2>List of Events</h2>
+      </div>
+      <div class="text-center col-md-10 offset-md-1">
+        <a href="?filter=active"><button type="button" class="btn btn-primary">Active Events</button></a>
+        <a href="?filter=past"><button type="button" class="btn btn-secondary">Past Events</button></a>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addEventModal">
+          Add Event
+        </button>
+        <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5>Add Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form method="post">
+                <div class="modal-body">
+                  <div class="form-group row">
+                    <label for="title" class="col-sm-3 col-form-label">Title</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" id="title" name="title" placeholder="Title of the event">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="address" class="col-sm-3 col-form-label">Location</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" id="address" name="address"
+                        placeholder="Location of the event">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="date" class="col-sm-3 col-form-label">Date</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" id="date" name="date" placeholder="YYYY-MM-DD HH:MM">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="description" class="col-sm-3 col-form-label">Description</label>
+                    <div class="col-sm-9">
+                      <textarea id="description" name="description" class="form-control"
+                        rows="3">${event.getDescription()}</textarea>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <input type="submit" class="btn btn-success" name="action" value="Create">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+      <div class="row py-2">
+        <div class="col-md-10 offset-md-1">
+          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <img class="card-img-bottom" src="images/events/1.jpg" alt="Card image"
+                    style="width:150px;height:150px;">
+                </div>
+                <div class="col-md-7 offset-md-1">
+                  <h3>${event.getTitle()}</h3>
+                  <p>Location: ${event.getAddress()}</p>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal1"
+                    id="viewDetailButton1">
+                    Details
+                  </button>
+                  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <div class="col-md-2">
+                            <img class=" rounded mx-auto d-block" src="images/events/1.jpg"
+                              alt="Card image" style="width:110px;height:110px;">
+                          </div>
+
+                          <div class="col-md-8 offset-md-1">
+                            <h5>Manage Event</h5>
+                          </div>
+
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <form method="post">
+                          <div class="modal-body">
+                            <h5>Information</h3>
+                              <div class="form-group row">
+                                <label for="staticEmail" class="col-sm-3 col-form-label">Title</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" id="title" name="title"
+                                    value="${event.getTitle()}">
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label for="staticEmail" class="col-sm-3 col-form-label">Location</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" id="address" name="address"
+                                    value="${event.getAddress()}">
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label for="staticEmail" class="col-sm-3 col-form-label">Date</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" id="date" name="date"
+                                    value="${event.getDate()}" placeholder="YYYY-MM-DD HH:MM">
+                                </div>
+                              </div>
+                              <h5>Description</h3>
+                                <textarea id="description" name="description" class="form-control"
+                                  rows="3">${event.getDescription()}</textarea>
+                          </div>
+                          <div class="modal-footer">
+                            <c:if test="${param['filter']!='past'}">
+                              <input type="hidden" name="event_id" value="1">
+                              <input type="submit" class="btn btn-success" name="action" value="Update">
+                              <input type="submit" class="btn btn-danger" name="action" value="Terminate">
+                            </c:if>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <footer class="mt-auto footer text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <p>All Rights Reserved by To Be Decided Later</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
