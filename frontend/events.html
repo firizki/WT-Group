@@ -29,86 +29,9 @@
     </div>
   </nav>
   <div class="container">
-    <c:forEach var="event" items="${events}" varStatus="id">
-      <div class="row py-2">
-        <div class="col-md-10 offset-md-1">
-          <div class="card shadow-2-strong" style="border-radius: 1rem;">
-            <div class="card-body">
-              <div class="row align-items-center">
-                <div class="col-md-2">
-                  <img class="card-img-bottom" src="images/events/1.jpg" alt="Card image"
-                    style="width:150px;height:150px;">
-                </div>
-                <div class="col-md-7 offset-md-1">
-                  <h3>${event.getTitle()}</h3>
-                  <p>Location: ${event.getAddress()}</p>
-                </div>
-                <div class="col-md-2">
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal1"
-                    id="viewDetailButton1">
-                    Details
-                  </button>
-                  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <div class="col-md-2">
-                            <img class="card-img-bottom" src="images/events/1.jpg" alt="Card image"
-                              style="width:110px;height:110px;">
-                          </div>
-                          <div class="col-md-7 offset-md-1">
+    <div id="event_list">
 
-                            <h3>${event.getTitle()}</h3>
-                            <p>Location: ${event.getAddress()}</p>
-                            <p>Date ${event.getDate()}</p>
-                          </div>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                        <form method="post" action="donations">
-                          <div class="modal-body">
-                            <h5>Description</h3>
-                              <p>${event.getDescription()}</p>
-                          </div>
-                          <div class="modal-body">
-                            <table class="table">
-                              <thead>
-                                <tr>
-                                  <th scope="col">Name</th>
-                                  <th scope="col">Quantity</th>
-                                  <th scope="col"></th>
-                                </tr>
-                              </thead>
-                              <tbody id="food_panel1">
-                                <tr>
-                                  <td><input id="food_name" name="food_name[]" type="text" class="form-control"
-                                      placeholder="Food Name" required></td>
-                                  <td><input id="quantity" name="quantity[]" type="number" class="form-control"
-                                      placeholder="Quantity" value="0" required></td>
-                                  <td class="align-middle"></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <button onclick="add_form(1)" class="btn btn-success">Add Food</button>
-                            <input type="hidden" name="event_id" value="1">
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <input type="submit" class="btn btn-primary" value="Donate">
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </c:forEach>
+    </div>
   </div>
 
   <script>
@@ -122,6 +45,102 @@
     function delete_food(event_id, childIndex) {
       var mapChild = event_id + '_' + childIndex;
       document.getElementById("food_panel_element" + mapChild).remove();
+    }
+
+    const data_events = [
+      {
+        id: 1,
+        title: 'Banjir',
+        address: 'Address',
+        date: '20200727 12:00:00',
+        description: 'Description',
+        active: 1
+      },
+    ]
+
+    const event_list = document.getElementById('event_list');
+
+    for (let i = 0; i < data_events.length; i++) {
+      const element = data_events[i];
+      template = `
+        <div class='row py-2'>
+          <div class='col-md-10 offset-md-1'>
+            <div class='card shadow-2-strong border-rad-1'>
+              <div class='card-body'>
+                <div class='row align-items-center'>
+                  <div class='col-md-2'>
+                    <img class='card-img-bottom' src='images/events/1.jpg' style='width:150px;height:150px;'>
+                  </div>
+                  <div class='col-md-7 offset-md-1'>
+                    <h3>${element.title}</h3>
+                    <p>Location: ${element.address}</p>
+                  </div>
+                  <div class='col-md-2'>
+                    <button type='button' class='btn btn-primary' data-toggle='modal' data-target='#myModal${i}' >
+                      Details
+                    </button>
+                    <div class='modal fade' id='myModal${i}' tabindex='-1' role='dialog'
+                      aria-labelledby='exampleModalCenterTitle' aria-hidden='true'>
+                      <div class='modal-dialog modal-dialog-centered' role='document'>
+                        <div class='modal-content'>
+                          <div class='modal-header'>
+                            <div class='col-md-2'>
+                              <img class='card-img-bottom' src='images/events/1.jpg' style='width:110px;height:110px;'>
+                            </div>
+                            <div class='col-md-7 offset-md-1'>
+
+                              <h3>${element.title}</h3>
+                              <p>Location: ${element.address}</p>
+                              <p>Date ${element.date}</p>
+                            </div>
+                            <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                              <span aria-hidden='true'>&times;</span>
+                            </button>
+                          </div>
+                          <form method='post' action='donations'>
+                            <div class='modal-body'>
+                              <h5>Description</h3>
+                                <p>${element.description}</p>
+                            </div>
+                            <div class='modal-body'>
+                              <table class='table'>
+                                <thead>
+                                  <tr>
+                                    <th scope='col'>Name</th>
+                                    <th scope='col'>Quantity</th>
+                                    <th scope='col'></th>
+                                  </tr>
+                                </thead>
+                                <tbody id='food_panel1'>
+                                  <tr>
+                                    <td><input id='food_name' name='food_name[]' type='text' class='form-control'
+                                        placeholder='Food Name' required></td>
+                                    <td><input id='quantity' name='quantity[]' type='number' class='form-control'
+                                        placeholder='Quantity' value='0' required></td>
+                                    <td class='align-middle'></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <button onclick='add_form(1)' class='btn btn-success'>Add Food</button>
+                              <input type='hidden' name='event_id' value='1'>
+                            </div>
+                            <div class='modal-footer'>
+                              <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+                              <input type='submit' class='btn btn-primary' value='Donate'>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      event_list.innerHTML += template;
     }
   </script>
   <footer class="mt-auto footer text-center">

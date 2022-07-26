@@ -99,3 +99,7 @@ body {
     margin: 0;
     font-weight: 300;
 }
+
+.border-rad-1 {
+    border-radius: 1rem;
+}
