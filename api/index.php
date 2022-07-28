@@ -344,6 +344,78 @@ $app->post('/reject_donation', function ($request, $response, $args) {
     }
 });
 
+$app->post('/event', function ($request, $response, $args) {
+    $title = $_POST['title'];
+    $address = $_POST['address'];
+    $date = $_POST['date'];
+    $description = $_POST['description'];
+    $active = 1;
+    try {
+        $sql = "INSERT INTO events (title,address,date,description,active) VALUES (:title,:address,:date,:description,:active)";
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':title', $title);
+        $stmt->bindValue(':address', $address);
+        $stmt->bindValue(':date', $date);
+        $stmt->bindValue(':description', $description);
+        $stmt->bindValue(':active', $active);
+
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo json_encode($data);
+    }
+});
+
+//update event 
+$app->post('/event/{id}', function ($request, $response, $args) {
+    $id = $args['id'];
+    $title = $_POST['title'];
+    $address = $_POST['address'];
+    $date = $_POST['date'];
+    $description = $_POST['description'];
+
+    try {
+        $sql = "UPDATE events SET title=:title, address=:address, date=:date, description=:description WHERE id='$id'";
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':title', $title);
+        $stmt->bindValue(':address', $address);
+        $stmt->bindValue(':date', $date);
+        $stmt->bindValue(':description', $description);
+
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //create admin
@@ -723,42 +795,7 @@ $app->delete('/donator/{id}', function ($request, $response, $args) {
 });
 
 //create events
-$app->post('/event', function ($request, $response, $args) {
-    $id = $_POST['id'];
-    $title = $_POST['title'];
-    $address = $_POST['address'];
-    $date = $_POST['date'];
-    $description = $_POST['description'];
-    $active = $_POST['active'];
-    try {
-        $sql = "INSERT INTO events (id,title,address,date,description,active) VALUES (:id,:title,:address,:date,:description,:active)";
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':id', $id);
-        $stmt->bindValue(':title', $title);
-        $stmt->bindValue(':address', $address);
-        $stmt->bindValue(':date', $date);
-        $stmt->bindValue(':description', $description);
-        $stmt->bindValue(':active', $active);
 
-        $stmt->execute();
-        $count = $stmt->rowCount();
-        $db = null;
-
-        $data = array(
-            "status" => "success",
-            "rowcount" =>$count
-        );
-        echo json_encode($data);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo json_encode($data);
-    }
-});
 
 //read all events
 $app->get('/events', function ($request, $response, $args) {
@@ -773,45 +810,6 @@ $app->get('/events', function ($request, $response, $args) {
         $user = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         echo json_encode($user);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo $e;
-        echo json_encode($data);
-    }
-});
-
-//update event 
-$app->post('/event/{id}', function ($request, $response, $args) {
-    $id = $args['id'];
-    $title = $_POST['title'];
-    $address = $_POST['address'];
-    $date = $_POST['date'];
-    $description = $_POST['description'];
-    $active = $_POST['active'];
-
-    try {
-        $sql = "UPDATE events SET title=:title, address=:address, date=:date, description=:description, active=:active WHERE id='$id'";
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':title', $title);
-        $stmt->bindValue(':address', $address);
-        $stmt->bindValue(':date', $date);
-        $stmt->bindValue(':description', $description);
-        $stmt->bindValue(':active', $active);
-
-        $stmt->execute();
-        $count = $stmt->rowCount();
-        $db = null;
-
-        $data = array(
-            "status" => "success",
-            "rowcount" =>$count
-        );
-        echo json_encode($data);
     } catch (PDOException $e) {
         $data = array(
             "status" => "fail"

@@ -34,8 +34,8 @@
         <h2>List of Events</h2>
       </div>
       <div class="text-center col-md-10 offset-md-1">
-        <a ><button type="button" class="btn btn-primary" onclick="get_active_events()">Active Events</button></a>
-        <a ><button type="button" class="btn btn-secondary" onclick="get_past_events()">Past Events</button></a>
+        <a><button type="button" class="btn btn-primary" onclick="get_active_events()">Active Events</button></a>
+        <a><button type="button" class="btn btn-secondary" onclick="get_past_events()">Past Events</button></a>
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addEventModal">
           Add Event
         </button>
@@ -49,41 +49,40 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <form method="post">
-                <div class="modal-body">
-                  <div class="form-group row">
-                    <label for="title" class="col-sm-3 col-form-label">Title</label>
-                    <div class="col-sm-9">
-                      <input type="text" class="form-control" id="title" name="title" placeholder="Title of the event">
-                    </div>
+              <div class="modal-body">
+                <div class="form-group row">
+                  <label for="title" class="col-sm-3 col-form-label">Title</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="title" name="title" placeholder="Title of the event">
                   </div>
-                  <div class="form-group row">
-                    <label for="address" class="col-sm-3 col-form-label">Location</label>
-                    <div class="col-sm-9">
-                      <input type="text" class="form-control" id="address" name="address"
-                        placeholder="Location of the event">
-                    </div>
+                </div>
+                <div class="form-group row">
+                  <label for="address" class="col-sm-3 col-form-label">Location</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="address" name="address"
+                      placeholder="Location of the event">
                   </div>
-                  <div class="form-group row">
-                    <label for="date" class="col-sm-3 col-form-label">Date</label>
-                    <div class="col-sm-9">
-                      <input type="text" class="form-control" id="date" name="date" placeholder="YYYY-MM-DD HH:MM">
-                    </div>
+                </div>
+                <div class="form-group row">
+                  <label for="date" class="col-sm-3 col-form-label">Date</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="date" name="date" placeholder="YYYY-MM-DD HH:MM">
                   </div>
-                  <div class="form-group row">
-                    <label for="description" class="col-sm-3 col-form-label">Description</label>
-                    <div class="col-sm-9">
-                      <textarea id="description" name="description" class="form-control" placeholder="Event description"
-                        rows="3"></textarea>
-                    </div>
+                </div>
+                <div class="form-group row">
+                  <label for="description" class="col-sm-3 col-form-label">Description</label>
+                  <div class="col-sm-9">
+                    <textarea id="description" name="description" class="form-control" placeholder="Event description"
+                      rows="3"></textarea>
                   </div>
+                </div>
 
-                </div>
-                <div class="modal-footer">
-                  <input type="submit" class="btn btn-success" name="action" value="Create">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </form>
+              </div>
+              <div class="modal-footer">
+                <input type="submit" class="btn btn-success" name="action" value="Create" data-dismiss="modal"
+                  onclick="add_event()">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
             </div>
           </div>
         </div>
@@ -124,10 +123,10 @@
 
         filter = '';
 
-        if(event.active == 1) {
+        if (event.active == 1) {
           filter = `
           <input type="hidden" name="event_id" value="${event.id}">
-          <input type="submit" class="btn btn-success" name="action" value="Update">
+          <input type="submit" class="btn btn-success" name="action" value="Update" data-dismiss="modal" onclick="update_event(${event.id})">
           <input type="submit" class="btn btn-danger" name="action" value="Terminate" onclick="terminate_event(${event.id})">
           `;
         }
@@ -173,26 +172,26 @@
                               <div class="form-group row">
                                 <label for="staticEmail" class="col-sm-3 col-form-label">Title</label>
                                 <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="title" name="title"
+                                  <input type="text" class="form-control" id="update_title${event.id}" name="title"
                                     value="${event.title}">
                                 </div>
                               </div>
                               <div class="form-group row">
                                 <label for="staticEmail" class="col-sm-3 col-form-label">Location</label>
                                 <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="address" name="address"
+                                  <input type="text" class="form-control" id="update_address${event.id}" name="address"
                                     value="${event.address}">
                                 </div>
                               </div>
                               <div class="form-group row">
                                 <label for="staticEmail" class="col-sm-3 col-form-label">Date</label>
                                 <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="date" name="date" value="${event.date}"
+                                  <input type="text" class="form-control" id="update_date${event.id}" name="date" value="${event.date}"
                                     placeholder="YYYY-MM-DD HH:MM">
                                 </div>
                               </div>
                               <h5>Description</h3>
-                                <textarea id="description" name="description" class="form-control"
+                                <textarea id="update_description${event.id}" name="description" class="form-control"
                                   rows="3">${event.description}</textarea>
                           </div>
                           <div class="modal-footer">
@@ -214,6 +213,32 @@
       }
     }
 
+    function add_event() {
+      $.post("http://127.0.0.1:8888/event",
+        {
+          title: $('#title').val(),
+          address: $('#address').val(),
+          date: $('#date').val(),
+          description: $('#description').val(),
+        }, function (data, status) {
+          get_active_events();
+        });
+    }
+
+    function update_event(event_id) {
+      $.post("http://127.0.0.1:8888/event/"+event_id,
+        {
+          title: $("#update_title"+event_id).val(),
+          address: $("#update_address"+event_id).val(),
+          date: $("#update_date"+event_id).val(),
+          description: $("#update_description"+event_id).val(),
+        }, function (data, status) {
+          $('body').removeClass('modal-open');
+          $('.modal-backdrop').remove();
+          get_active_events();
+        });
+    }
+
     function get_active_events() {
       $.get("http://127.0.0.1:8888/active_events", function (data, status) {
         res = JSON.parse(data);
@@ -230,14 +255,14 @@
 
     function terminate_event(event_id) {
       $.post("http://127.0.0.1:8888/change_event_state",
-      {
-        event_id: event_id,
-        active: 0
-      }, function (data, status) {
-        $('body').removeClass('modal-open');
-        $('.modal-backdrop').remove();
-        get_active_events();
-      });
+        {
+          event_id: event_id,
+          active: 0
+        }, function (data, status) {
+          $('body').removeClass('modal-open');
+          $('.modal-backdrop').remove();
+          get_active_events();
+        });
     }
 
     get_active_events();
