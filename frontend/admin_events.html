@@ -234,6 +234,8 @@
         event_id: event_id,
         active: 0
       }, function (data, status) {
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
         get_active_events();
       });
     }

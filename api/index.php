@@ -280,6 +280,70 @@ $app->get('/admin_donations', function ($request, $response, $args) {
     }
 });
 
+$app->post('/accept_donation', function ($request, $response, $args) {
+    $id = $_POST['donation_id'];
+    $accepted = date("Y-m-d h:i:s");
+    $state = 1;
+
+    try {
+        $sql = "UPDATE donations SET accepted=:accepted, state=:state WHERE id='$id'";
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':accepted', $accepted);
+        $stmt->bindValue(':state', $state);
+
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+$app->post('/reject_donation', function ($request, $response, $args) {
+    $id = $_POST['donation_id'];
+    $canceled = date("Y-m-d h:i:s");
+    $state = 2;
+
+    try {
+        $sql = "UPDATE donations SET canceled=:canceled, state=:state WHERE id='$id'";
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':canceled', $canceled);
+        $stmt->bindValue(':state', $state);
+
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //create admin

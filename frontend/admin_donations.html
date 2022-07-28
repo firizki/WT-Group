@@ -97,10 +97,15 @@
 
           donation_state = '';
           donation_state_class = '';
+          button_change_state = '';
 
           if (donation.state == 0) {
             donation_state = 'Waiting for Acceptance';
             donation_state_class = 'btn-secondary';
+            button_change_state = `
+            <button type="submit" class="btn btn-success" name="action" value="accept" onclick="accept_donation(${donation.id})">Accept</button>
+            <button type="submit" class="btn btn-danger" name="action" value="reject" onclick="reject_donation(${donation.id})">Reject</button>
+            `;
           } else if (donation.state == 1) {
             donation_state = 'Accepted';
             donation_state_class = 'btn-success';
@@ -156,13 +161,7 @@
                       </div>
                     </div>
                     <div class="modal-footer">
-                      <form method="post">
-                        <input type="hidden" name="donation_id" value="{donation.getId()}">
-                        <button type="submit" class="btn btn-success" name="action"
-                          value="accept">Accept</button>
-                        <button type="submit" class="btn btn-danger" name="action"
-                          value="reject">Reject</button>
-                      </form>
+                      ${button_change_state}
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                   </div>
@@ -193,6 +192,28 @@
           `
           )
         });
+      });
+    }
+
+    function accept_donation(donation_id){
+      $.post("http://127.0.0.1:8888/accept_donation",
+      {
+        donation_id: donation_id
+      }, function (data, status) {
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+        get_all();
+      });
+    }
+
+    function reject_donation(donation_id){
+      $.post("http://127.0.0.1:8888/reject_donation",
+      {
+        donation_id: donation_id
+      }, function (data, status) {
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+        get_all();
       });
     }
 
