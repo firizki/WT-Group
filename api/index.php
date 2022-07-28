@@ -1,8 +1,286 @@
 <?php
 require '../vendor/autoload.php';
 require 'db.php';
+// require 'login.php';
 
 $app = new \Slim\App();
+
+$app->get('/login', function ($request, $response, $args) {
+    $email = $_GET["email"];
+    $password = $_GET["password"];
+    $sql = "SELECT * FROM donators WHERE email = '$email' AND password = '$password'";
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+    
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo json_encode($data);
+    }
+});
+
+$app->get('/active_events', function ($request, $response, $args) {
+    $sql = "SELECT * FROM events WHERE active=1";
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+$app->get('/past_events', function ($request, $response, $args) {
+    $sql = "SELECT * FROM events WHERE active=0";
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+$app->post('/donation', function ($request, $response, $args) {
+    $created = date("Y-m-d h:i:s");
+    $state = 0;
+    $donator_id = $_POST['donator_id'];
+    $event_id = $_POST['event_id'];
+    try {
+        $sql = "INSERT INTO donations (created,state,donator_id,event_id) VALUES (:created,:state,:donator_id,:event_id)";
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':created', $created);
+        $stmt->bindValue(':state', $state);
+        $stmt->bindValue(':donator_id', $donator_id);
+        $stmt->bindValue(':event_id', $event_id);
+
+        $stmt->execute();
+        $last_id = $db->lastInsertId();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "id" => $last_id,
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo json_encode($data);
+    }
+});
+
+$app->post('/foods', function ($request, $response, $args) {
+    $data = json_decode($_POST['data'], true);
+    $donation_id = $_POST['donation_id'];
+    try {
+        $sql = "INSERT INTO foods (name,quantity,donation_id) VALUES ";
+        foreach ($data as $d) {
+            $tmp_sql = "('".$d["name"]."',".$d["quantity"].",".$donation_id."),";
+            $sql .= $tmp_sql;
+        }
+        $sql = substr($sql, 0, -1);
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo json_encode($data);
+    }
+});
+
+$app->get('/foods', function ($request, $response, $args) {
+    $donation_id = $_GET['donation_id'];
+    $sql = "SELECT * FROM foods WHERE donation_id=".$donation_id;
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+$app->get('/donations', function ($request, $response, $args) {
+    $donator_id = $_GET['donator_id'];
+    $sql = "SELECT * FROM donations WHERE donator_id=".$donator_id;
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+//read one event
+$app->get('/event/{id}', function ($request, $response, $args) {
+    $id = $args["id"];
+    $sql = "SELECT * FROM events WHERE id = '$id'";
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+    
+        $stmt = $db->query($sql);
+        $event = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($event[0]);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo json_encode($data);
+    }
+});
+
+$app->get('/admin_login', function ($request, $response, $args) {
+    $username = $_GET["username"];
+    $password = $_GET["password"];
+    $sql = "SELECT * FROM admins WHERE username = '$username' AND password = '$password'";
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+    
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo json_encode($data);
+    }
+});
+
+$app->post('/change_event_state', function ($request, $response, $args) {
+    $id = $_POST['event_id'];
+    $active = $_POST['active'];
+
+    try {
+        $sql = "UPDATE events SET active=:active WHERE id='$id'";
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':active', $active);
+
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        $db = null;
+
+        $data = array(
+            "status" => "success",
+            "rowcount" =>$count
+        );
+        echo json_encode($data);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+$app->get('/admin_donations', function ($request, $response, $args) {
+    $state = $_GET['state'];
+    if ($state == null) {
+        $sql = "SELECT * FROM donations ";
+    } else {
+        $sql = "SELECT * FROM donations WHERE state='$state'";
+    }
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($user);
+    } catch (PDOException $e) {
+        $data = array(
+            "status" => "fail"
+        );
+        echo $e;
+        echo json_encode($data);
+    }
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //create admin
 $app->post('/admin', function ($request, $response, $args) {
@@ -139,68 +417,6 @@ $app->delete('/admin/{id}', function ($request, $response, $args) {
         $data = array(
             "status" => "fail"
         );
-        echo json_encode($data);
-    }
-});
-
-//create donations
-$app->post('/donation', function ($request, $response, $args) {
-    $id = $_POST['id'];
-    $created = $_POST['created'];
-    $accepted = $_POST['accepted'];
-    $canceled = $_POST['canceled'];
-    $state = $_POST['state'];
-    $donator_id = $_POST['donator_id'];
-    $event_id = $_POST['event_id'];
-    try {
-        $sql = "INSERT INTO donations (id,created,accepted,canceled,state,donator_id,event_id) VALUES (:id,:created,:accepted,:canceled,:state,:donator_id,:event_id)";
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':id', $id);
-        $stmt->bindValue(':created', $created);
-        $stmt->bindValue(':accepted', $accepted);
-        $stmt->bindValue(':canceled', $canceled);
-        $stmt->bindValue(':state', $state);
-        $stmt->bindValue(':donator_id', $donator_id);
-        $stmt->bindValue(':event_id', $event_id);
-
-        $stmt->execute();
-        $count = $stmt->rowCount();
-        $db = null;
-
-        $data = array(
-            "status" => "success",
-            "rowcount" =>$count
-        );
-        echo json_encode($data);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo json_encode($data);
-    }
-});
-
-//read all donations
-$app->get('/donations', function ($request, $response, $args) {
-    $sql = "SELECT * FROM donations";
-    try {
-        // Get DB Object
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-
-        $stmt = $db->query($sql);
-        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
-        $db = null;
-        echo json_encode($user);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo $e;
         echo json_encode($data);
     }
 });
@@ -502,28 +718,6 @@ $app->get('/events', function ($request, $response, $args) {
     }
 });
 
-//read one event
-$app->get('/event/{id}', function ($request, $response, $args) {
-    $id = $args["id"];
-    $sql = "SELECT * FROM events WHERE id = '$id'";
-    try {
-        // Get DB Object
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-    
-        $stmt = $db->query($sql);
-        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
-        $db = null;
-        echo json_encode($user);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo json_encode($data);
-    }
-});
-
 //update event 
 $app->post('/event/{id}', function ($request, $response, $args) {
     $id = $args['id'];
@@ -589,61 +783,7 @@ $app->delete('/event/{id}', function ($request, $response, $args) {
     }
 });
 
-//create food
-$app->post('/food', function ($request, $response, $args) {
-    $id = $_POST['id'];
-    $name = $_POST['name'];
-    $quantity = $_POST['quantity'];
-    $donation_id = $_POST['donation_id'];
-    try {
-        $sql = "INSERT INTO foods (id,name,quantity,donation_id) VALUES (:id,:name,:quantity,:donation_id)";
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':id', $id);
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':quantity', $quantity);
-        $stmt->bindValue(':donation_id', $donation_id);
-
-        $stmt->execute();
-        $count = $stmt->rowCount();
-        $db = null;
-
-        $data = array(
-            "status" => "success",
-            "rowcount" =>$count
-        );
-        echo json_encode($data);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo json_encode($data);
-    }
-});
-
 //read all food
-$app->get('/foods', function ($request, $response, $args) {
-    $sql = "SELECT * FROM foods";
-    try {
-        // Get DB Object
-        $db = new db();
-        // Connect
-        $db = $db->connect();
-
-        $stmt = $db->query($sql);
-        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
-        $db = null;
-        echo json_encode($user);
-    } catch (PDOException $e) {
-        $data = array(
-            "status" => "fail"
-        );
-        echo $e;
-        echo json_encode($data);
-    }
-});
 
 //read one food
 $app->get('/food/{id}', function ($request, $response, $args) {

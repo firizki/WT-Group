@@ -23,7 +23,8 @@
     </div>
 
     <div class="profile-side">
-      <a href="admin_profile.html">Hi, ADMIN<img src="images/profile.png" class="icons"></a>
+      <a href="admin_profile.html">Hi,&nbsp;<b id="namebar">Name</b>&nbsp;<img src="images/profile.png"
+          class="icons"></a>
       <a href="logout.html"><button class="btn btn-secondary">Logout</button></a>
     </div>
   </nav>
@@ -33,8 +34,8 @@
         <h2>List of Events</h2>
       </div>
       <div class="text-center col-md-10 offset-md-1">
-        <a href="?filter=active"><button type="button" class="btn btn-primary">Active Events</button></a>
-        <a href="?filter=past"><button type="button" class="btn btn-secondary">Past Events</button></a>
+        <a ><button type="button" class="btn btn-primary" onclick="get_active_events()">Active Events</button></a>
+        <a ><button type="button" class="btn btn-secondary" onclick="get_past_events()">Past Events</button></a>
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addEventModal">
           Add Event
         </button>
@@ -72,8 +73,8 @@
                   <div class="form-group row">
                     <label for="description" class="col-sm-3 col-form-label">Description</label>
                     <div class="col-sm-9">
-                      <textarea id="description" name="description" class="form-control"
-                        rows="3">${event.getDescription()}</textarea>
+                      <textarea id="description" name="description" class="form-control" placeholder="Event description"
+                        rows="3"></textarea>
                     </div>
                   </div>
 
@@ -90,88 +91,8 @@
 
     </div>
 
-      <div class="row py-2">
-        <div class="col-md-10 offset-md-1">
-          <div class="card shadow-2-strong" style="border-radius: 1rem;">
-            <div class="card-body">
-              <div class="row align-items-center">
-                <div class="col-md-2">
-                  <img class="card-img-bottom" src="images/events/1.jpg" alt="Card image"
-                    style="width:150px;height:150px;">
-                </div>
-                <div class="col-md-7 offset-md-1">
-                  <h3>${event.getTitle()}</h3>
-                  <p>Location: ${event.getAddress()}</p>
-                </div>
-                <div class="col-md-2">
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal1"
-                    id="viewDetailButton1">
-                    Details
-                  </button>
-                  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <div class="col-md-2">
-                            <img class=" rounded mx-auto d-block" src="images/events/1.jpg"
-                              alt="Card image" style="width:110px;height:110px;">
-                          </div>
-
-                          <div class="col-md-8 offset-md-1">
-                            <h5>Manage Event</h5>
-                          </div>
-
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                        <form method="post">
-                          <div class="modal-body">
-                            <h5>Information</h3>
-                              <div class="form-group row">
-                                <label for="staticEmail" class="col-sm-3 col-form-label">Title</label>
-                                <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="title" name="title"
-                                    value="${event.getTitle()}">
-                                </div>
-                              </div>
-                              <div class="form-group row">
-                                <label for="staticEmail" class="col-sm-3 col-form-label">Location</label>
-                                <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="address" name="address"
-                                    value="${event.getAddress()}">
-                                </div>
-                              </div>
-                              <div class="form-group row">
-                                <label for="staticEmail" class="col-sm-3 col-form-label">Date</label>
-                                <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="date" name="date"
-                                    value="${event.getDate()}" placeholder="YYYY-MM-DD HH:MM">
-                                </div>
-                              </div>
-                              <h5>Description</h3>
-                                <textarea id="description" name="description" class="form-control"
-                                  rows="3">${event.getDescription()}</textarea>
-                          </div>
-                          <div class="modal-footer">
-                            <c:if test="${param['filter']!='past'}">
-                              <input type="hidden" name="event_id" value="1">
-                              <input type="submit" class="btn btn-success" name="action" value="Update">
-                              <input type="submit" class="btn btn-danger" name="action" value="Terminate">
-                            </c:if>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div id="event_list">
+    </div>
   </div>
   <footer class="mt-auto footer text-center">
     <div class="container">
@@ -182,12 +103,143 @@
       </div>
     </div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
+  <script src="js/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
     crossorigin="anonymous"></script>
+  <script>
+    admin = localStorage.getItem("admin");
+    if (admin == null) {
+      window.location.replace("admin_login.html");
+    }
+    admin = JSON.parse(admin);
+    $('#namebar').html(admin.name);
+
+    function load_event_list(event_list_data) {
+      const event_list = $('#event_list');
+      event_list.html("");
+
+      for (let i = 0; i < event_list_data.length; i++) {
+        const event = event_list_data[i];
+
+        filter = '';
+
+        if(event.active == 1) {
+          filter = `
+          <input type="hidden" name="event_id" value="${event.id}">
+          <input type="submit" class="btn btn-success" name="action" value="Update">
+          <input type="submit" class="btn btn-danger" name="action" value="Terminate" onclick="terminate_event(${event.id})">
+          `;
+        }
+        template = `
+        <div class="row py-2">
+          <div class="col-md-10 offset-md-1">
+            <div class="card shadow-2-strong" style="border-radius: 1rem;">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-2">
+                    <img class="card-img-bottom" src="images/events/${event.id}.jpg" alt="Card image"
+                      style="width:150px;height:150px;">
+                  </div>
+                  <div class="col-md-7 offset-md-1">
+                    <h3>${event.title}</h3>
+                    <p>Location: ${event.address}</p>
+                  </div>
+                  <div class="col-md-2">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal${event.id}"
+                      id="viewDetailButton1">
+                      Details
+                    </button>
+                    <div class="modal fade" id="myModal${event.id}" tabindex="-1" role="dialog"
+                      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <div class="col-md-2">
+                              <img class=" rounded mx-auto d-block" src="images/events/1.jpg" alt="Card image"
+                                style="width:110px;height:110px;">
+                            </div>
+
+                            <div class="col-md-8 offset-md-1">
+                              <h5>Manage Event</h5>
+                            </div>
+
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <h5>Information</h3>
+                              <div class="form-group row">
+                                <label for="staticEmail" class="col-sm-3 col-form-label">Title</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" id="title" name="title"
+                                    value="${event.title}">
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label for="staticEmail" class="col-sm-3 col-form-label">Location</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" id="address" name="address"
+                                    value="${event.address}">
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label for="staticEmail" class="col-sm-3 col-form-label">Date</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" id="date" name="date" value="${event.date}"
+                                    placeholder="YYYY-MM-DD HH:MM">
+                                </div>
+                              </div>
+                              <h5>Description</h3>
+                                <textarea id="description" name="description" class="form-control"
+                                  rows="3">${event.description}</textarea>
+                          </div>
+                          <div class="modal-footer">
+                            ${filter}
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        `;
+
+        event_list.append(template);
+      }
+    }
+
+    function get_active_events() {
+      $.get("http://127.0.0.1:8888/active_events", function (data, status) {
+        res = JSON.parse(data);
+        load_event_list(res);
+      });
+    }
+
+    function get_past_events() {
+      $.get("http://127.0.0.1:8888/past_events", function (data, status) {
+        res = JSON.parse(data);
+        load_event_list(res);
+      });
+    }
+
+    function terminate_event(event_id) {
+      $.post("http://127.0.0.1:8888/change_event_state",
+      {
+        event_id: event_id,
+        active: 0
+      }, function (data, status) {
+        get_active_events();
+      });
+    }
+
+    get_active_events();
+  </script>
 </body>
 
 </html>

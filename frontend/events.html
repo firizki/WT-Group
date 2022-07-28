@@ -24,7 +24,7 @@
     </div>
 
     <div class="profile-side">
-      <a href="profile.html">Hi, NAME<img src="images/profile.png" class="icons"></a>
+      <a href="profile.html">Hi,&nbsp;<b id="namebar">Name</b>&nbsp;<img src="images/profile.png" class="icons"></a>
       <a href="logout.html"><button class="btn btn-secondary">Logout</button></a>
     </div>
   </nav>
@@ -33,12 +33,33 @@
     </div>
   </div>
 
+
+  <footer class="mt-auto footer text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <p>All Rights Reserved by To Be Decided Later</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="js/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+    crossorigin="anonymous"></script>
   <script>
+    loginsession = localStorage.getItem("loginsession");
+    if (loginsession == null) {
+      window.location.replace("login.html");
+    }
+    loginsession = JSON.parse(loginsession);
+    $('#namebar').html(loginsession.name);
+
     function add_form(event_id) {
       const element = document.getElementById("food_panel" + event_id);
       var childIndex = element.childElementCount;
       var mapChild = event_id + '_' + childIndex;
-      element.innerHTML += '<tr id="food_panel_element' + mapChild + '"> <td><input id="food_name" name="food_name[]" type="text" class="form-control" placeholder="Food Name" required></td> <td><input id="quantity" name="quantity[]" type="number" class="form-control" placeholder="Quantity" value="0" required></td> <td class="align-middle"><i onclick="delete_food(' + event_id + ',' + childIndex + ')" class="bi bi-x-circle"></i></td> </tr>';
+      element.innerHTML += `<tr id="food_panel_element${mapChild}"> <td><input id="food_name" name="food_name${event_id}[]" type="text" class="form-control" placeholder="Food Name" required></td> <td><input id="quantity" name="quantity${event_id}[]" type="number" class="form-control" placeholder="Quantity" value="0" required></td> <td class="align-middle"><i onclick="delete_food(${event_id},${childIndex})" class="bi bi-x-circle"></i></td> </tr>`;
     }
 
     function delete_food(event_id, childIndex) {
@@ -46,65 +67,82 @@
       document.getElementById("food_panel_element" + mapChild).remove();
     }
 
-    const data_events = [
-      {
-        id: 1,
-        title: 'Banjir',
-        address: 'Address',
-        date: '20200727 12:00:00',
-        description: 'Description',
-        active: 1
-      },
-      {
-        id: 2,
-        title: 'Banjir',
-        address: 'Address',
-        date: '20200727 12:00:00',
-        description: 'Description',
-        active: 1
-      },
-    ]
+    function donate_food(id) {
+      var food_name = [];
+      $(`input[name='food_name${id}[]']`).each(function (i, item) {
+        food_name.push(item.value);
+      });
+      var quantity = [];
+      $(`input[name='quantity${id}[]']`).each(function (i, item) {
+        quantity.push(item.value);
+      });
 
-    const event_list = document.getElementById('event_list');
+      var param_foods = [];
+      for (let i = 0; i < food_name.length; i++) {
+        fn = food_name[i];
+        qty = quantity[i];
+        param_foods.push({ name: fn, quantity: qty })
+      }
 
-    for (let i = 0; i < data_events.length; i++) {
-      const element = data_events[i];
-      template = `
-        <div class='row py-2'>
-          <div class='col-md-10 offset-md-1'>
-            <div class='card shadow-2-strong border-rad-1'>
-              <div class='card-body'>
-                <div class='row align-items-center'>
-                  <div class='col-md-2'>
-                    <img class='card-img-bottom' src='images/events/${element.id}.jpg' style='width:150px;height:150px;'>
-                  </div>
-                  <div class='col-md-7 offset-md-1'>
-                    <h3>${element.title}</h3>
-                    <p>Location: ${element.address}</p>
-                  </div>
-                  <div class='col-md-2'>
-                    <button type='button' class='btn btn-primary' data-toggle='modal' data-target='#myModal${i}' >
-                      Details
-                    </button>
-                    <div class='modal fade' id='myModal${i}' tabindex='-1' role='dialog'
-                      aria-labelledby='exampleModalCenterTitle' aria-hidden='true'>
-                      <div class='modal-dialog modal-dialog-centered' role='document'>
-                        <div class='modal-content'>
-                          <div class='modal-header'>
-                            <div class='col-md-2'>
-                              <img class='card-img-bottom' src='images/events/${element.id}.jpg' style='width:110px;height:110px;'>
+      $.post("http://127.0.0.1:8888/donation",
+        {
+          donator_id: loginsession.id,
+          event_id: id
+        },
+        function (data, status) {
+          data = JSON.parse(data);
+          $.post("http://127.0.0.1:8888/foods",
+            {
+              data: JSON.stringify(param_foods),
+              donation_id: data.id
+            },
+            function (data, status) {
+              data = JSON.parse(data);
+              window.location.replace("donations.html");
+            });
+        });
+    }
+
+    function load_event_list(event_list_data) {
+      const event_list = $('#event_list');
+
+      for (let i = 0; i < event_list_data.length; i++) {
+        const element = event_list_data[i];
+        template = `
+          <div class='row py-2'>
+            <div class='col-md-10 offset-md-1'>
+              <div class='card shadow-2-strong border-rad-1'>
+                <div class='card-body'>
+                  <div class='row align-items-center'>
+                    <div class='col-md-2'>
+                      <img class='card-img-bottom' src='images/events/${element.id}.jpg' style='width:150px;height:150px;'>
+                    </div>
+                    <div class='col-md-7 offset-md-1'>
+                      <h3>${element.title}</h3>
+                      <p>Location: ${element.address}</p>
+                    </div>
+                    <div class='col-md-2'>
+                      <button type='button' class='btn btn-primary' data-toggle='modal' data-target='#myModal${i}' >
+                        Details
+                      </button>
+                      <div class='modal fade' id='myModal${i}' tabindex='-1' role='dialog'
+                        aria-labelledby='exampleModalCenterTitle' aria-hidden='true'>
+                        <div class='modal-dialog modal-dialog-centered' role='document'>
+                          <div class='modal-content'>
+                            <div class='modal-header'>
+                              <div class='col-md-2'>
+                                <img class='card-img-bottom' src='images/events/${element.id}.jpg' style='width:110px;height:110px;'>
+                              </div>
+                              <div class='col-md-7 offset-md-1'>
+  
+                                <h3>${element.title}</h3>
+                                <p>Location: ${element.address}</p>
+                                <p>Date ${element.date}</p>
+                              </div>
+                              <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                              </button>
                             </div>
-                            <div class='col-md-7 offset-md-1'>
-
-                              <h3>${element.title}</h3>
-                              <p>Location: ${element.address}</p>
-                              <p>Date ${element.date}</p>
-                            </div>
-                            <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-                              <span aria-hidden='true'>&times;</span>
-                            </button>
-                          </div>
-                          <form method='post' action='donations'>
                             <div class='modal-body'>
                               <h5>Description</h3>
                                 <p>${element.description}</p>
@@ -120,22 +158,22 @@
                                 </thead>
                                 <tbody id='food_panel1'>
                                   <tr>
-                                    <td><input id='food_name' name='food_name[]' type='text' class='form-control'
+                                    <td><input id='food_name' name='food_name${element.id}[]' type='text' class='form-control'
                                         placeholder='Food Name' required></td>
-                                    <td><input id='quantity' name='quantity[]' type='number' class='form-control'
+                                    <td><input id='quantity' name='quantity${element.id}[]' type='number' class='form-control'
                                         placeholder='Quantity' value='0' required></td>
                                     <td class='align-middle'></td>
                                   </tr>
                                 </tbody>
                               </table>
-                              <button onclick='add_form(1)' class='btn btn-success'>Add Food</button>
+                              <button onclick='add_form(${element.id})' class='btn btn-success'>Add Food</button>
                               <input type='hidden' name='event_id' value='${element.title}'>
                             </div>
                             <div class='modal-footer'>
                               <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
-                              <input type='submit' class='btn btn-primary' value='Donate'>
+                              <input type='submit' class='btn btn-primary' value='Donate' onclick='donate_food(${element.id})'>
                             </div>
-                          </form>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -144,27 +182,17 @@
               </div>
             </div>
           </div>
-        </div>
-      `;
+        `;
 
-      event_list.innerHTML += template;
+        event_list.append(template);
+      }
     }
+
+    $.get("http://127.0.0.1:8888/active_events", function (data, status) {
+      res = JSON.parse(data);
+      load_event_list(res);
+    });
   </script>
-  <footer class="mt-auto footer text-center">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <p>All Rights Reserved by To Be Decided Later</p>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
-    crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -24,7 +24,8 @@
     </div>
 
     <div class="profile-side">
-      <a href="admin_profile.html">Hi, ADMIN<img src="images/profile.png" class="icons"></a>
+      <a href="admin_profile.html">Hi,&nbsp;<b id="namebar">Name</b>&nbsp;<img src="images/profile.png"
+          class="icons"></a>
       <a href="logout.html"><button class="btn btn-secondary">Logout</button></a>
     </div>
   </nav>
@@ -34,10 +35,10 @@
         <h2 class="text-center">List of Donations</h2>
       </div>
       <div class="text-center col-md-10 offset-md-1">
-        <a href="?filter=all"><button type="button" class="btn btn-primary">All</button></a>
-        <a href="?filter=check"><button type="button" class="btn btn-secondary">Waiting for Acceptance</button></a>
-        <a href="?filter=accept"><button type="button" class="btn btn-secondary">Accepted</button></a>
-        <a href="?filter=reject"><button type="button" class="btn btn-secondary">Rejected</button></a>
+        <a><button type="button" class="btn btn-primary" onclick="get_all()">All</button></a>
+        <a><button type="button" class="btn btn-secondary" onclick="get_waiting()">Waiting for Acceptance</button></a>
+        <a><button type="button" class="btn btn-secondary" onclick="get_accept()">Accepted</button></a>
+        <a><button type="button" class="btn btn-secondary" onclick="get_reject()">Rejected</button></a>
       </div>
     </div>
     <div class="row">
@@ -53,91 +54,10 @@
                   <th scope="col"></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    ${donation.event.title}
-                  </td>
-                  <td>
-                    ${donation.event.address}
-                  </td>
-                  <td>
-                    <p class="btn btn-success">
-                      ${donation.getStateStatus()}
-                    </p>
-                    <!-- <c:choose>
-                      <c:when test="${donation.getState()==0}">
-                        <p class="btn btn-secondary">
-                          <c:out value="${donation.getStateStatus()}" />
-                        </p>
-                      </c:when>
-                      <c:when test="${donation.getState()==1}">
-                        <p class="btn btn-success">
-                          <c:out value="${donation.getStateStatus()}" />
-                        </p>
-                      </c:when>
-                      <c:when test="${donation.getState()==2}">
-                        <p class="btn btn-danger">
-                          <c:out value="${donation.getStateStatus()}" />
-                        </p>
-                      </c:when>
-                    </c:choose> -->
-                  </td>
-                  <td>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal1"
-                      id="viewDetailButton1">
-                      Details
-                    </button>
-                    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
-                      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <div class="col-md-2">
-                              <img class="card-img-bottom" src="images/events/1.jpg"
-                                alt="Card image" style="width:110px;height:110px;">
-                            </div>
-                            <div class="col-md-7 offset-md-1">
+              <tbody id="donation_list">
 
-                              <h3>${donation.event.getTitle()}</h3>
-                              <p>Location: ${donation.event.getAddress()}</p>
-                              <p>Event Date: ${donation.event.getDate()}</p>
-                            </div>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <h5>Description</h5>
-                            <p>${donation.event.getDescription()}</p>
-                          </div>
-                          <div class="modal-body">
-                            <h5>Foods Donated</h5>
-                            <div class="d-flex justify-content-between">
-                              <p>${food.getName()}</p>
-                              <p>${food.getQuantity()}</p>
-                            </div>
-                          </div>
-                          <div class="modal-footer">
-                            <c:if test="${donation.getState()==0}">
-                              <form method="post">
-                                <input type="hidden" name="donation_id" value="${donation.getId()}">
-                                <button type="submit" class="btn btn-success" name="action"
-                                  value="accept">Accept</button>
-                                <button type="submit" class="btn btn-danger" name="action"
-                                  value="reject">Reject</button>
-                              </form>
-                            </c:if>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
               </tbody>
             </table>
-
           </div>
         </div>
       </div>
@@ -152,12 +72,161 @@
       </div>
     </div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
+  <script src="js/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
     crossorigin="anonymous"></script>
+  <script>
+    admin = localStorage.getItem("admin");
+    if (admin == null) {
+      window.location.replace("admin_login.html");
+    }
+    admin = JSON.parse(admin);
+    $('#namebar').html(admin.name);
+
+    function load_donations_list(donation_list_data) {
+      const donation_list = $('#donation_list');
+
+      donation_list.html('');
+
+      for (let i = 0; i < donation_list_data.length; i++) {
+        const donation = donation_list_data[i];
+
+        $.get("http://127.0.0.1:8888/event/" + donation.event_id, function (data, status) {
+          event = JSON.parse(data);
+
+          donation_state = '';
+          donation_state_class = '';
+
+          if (donation.state == 0) {
+            donation_state = 'Waiting for Acceptance';
+            donation_state_class = 'btn-secondary';
+          } else if (donation.state == 1) {
+            donation_state = 'Accepted';
+            donation_state_class = 'btn-success';
+          } else {
+            donation_state = 'Rejected';
+            donation_state_class = 'btn-danger';
+          }
+
+          template = `
+          <tr>
+            <td>
+              ${event.title}
+            </td>
+            <td>
+              ${event.address}
+            </td>
+            <td>
+              <p class="btn ${donation_state_class}">
+                ${donation_state}
+              </p>
+            </td>
+            <td>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal${donation.id}"
+                id="viewDetailButton1">
+                Details
+              </button>
+              <div class="modal fade" id="myModal${donation.id}" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <div class="col-md-2">
+                        <img class="card-img-bottom" src="images/events/1.jpg" alt="Card image"
+                          style="width:110px;height:110px;">
+                      </div>
+                      <div class="col-md-7 offset-md-1">
+
+                        <h3>${event.title}</h3>
+                        <p>Location: ${event.address}</p>
+                        <p>Event Date: ${event.date}</p>
+                      </div>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <h5>Description</h5>
+                      <p>${event.description}</p>
+                    </div>
+                    <div class="modal-body">
+                      <h5>Foods Donated</h5>
+                      <div id="food_list${donation.id}">
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <form method="post">
+                        <input type="hidden" name="donation_id" value="{donation.getId()}">
+                        <button type="submit" class="btn btn-success" name="action"
+                          value="accept">Accept</button>
+                        <button type="submit" class="btn btn-danger" name="action"
+                          value="reject">Reject</button>
+                      </form>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          `;
+
+          donation_list.append(template);
+          update_food_list(donation.id);
+        });
+      }
+
+    }
+
+    function update_food_list(donation_id) {
+      $.get("http://127.0.0.1:8888/foods?donation_id=" + donation_id, function (data, status) {
+        res = JSON.parse(data);
+        target = $("#food_list" + donation_id)
+        res.forEach(food => {
+          target.append(
+            `
+          <div class="d-flex justify-content-between">
+            <p>${food.name}</p>
+            <p>${food.quantity}</p>
+          </div>
+          `
+          )
+        });
+      });
+    }
+
+    function get_waiting() {
+      $.get("http://127.0.0.1:8888/admin_donations?state=0", function (data, status) {
+        res = JSON.parse(data);
+        load_donations_list(res);
+      });
+    }
+
+    function get_accept() {
+      $.get("http://127.0.0.1:8888/admin_donations?state=1", function (data, status) {
+        res = JSON.parse(data);
+        load_donations_list(res);
+      });
+    }
+
+    function get_reject() {
+      $.get("http://127.0.0.1:8888/admin_donations?state=2", function (data, status) {
+        res = JSON.parse(data);
+        load_donations_list(res);
+      });
+    }
+
+    function get_all() {
+      $.get("http://127.0.0.1:8888/admin_donations", function (data, status) {
+      res = JSON.parse(data);
+      load_donations_list(res);
+    });
+    }
+
+
+    get_all();
+  </script>
 </body>
 
 </html>

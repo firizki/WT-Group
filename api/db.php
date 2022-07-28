@@ -4,7 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
     
 class db{
     // Properties
-    private $host = 'localhost';
+    private $host = '127.0.0.1';
     private $user = 'root';
     private $password = '';
     private $dbname = 'food_sharing';
