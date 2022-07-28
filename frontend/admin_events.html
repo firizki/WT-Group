@@ -214,7 +214,7 @@
     }
 
     function add_event() {
-      $.post("http://127.0.0.1:8888/event",
+      $.post("http://webtechstrike.com:8888/event",
         {
           title: $('#title').val(),
           address: $('#address').val(),
@@ -226,7 +226,7 @@
     }
 
     function update_event(event_id) {
-      $.post("http://127.0.0.1:8888/event/"+event_id,
+      $.post("http://webtechstrike.com:8888/event/"+event_id,
         {
           title: $("#update_title"+event_id).val(),
           address: $("#update_address"+event_id).val(),
@@ -240,21 +240,21 @@
     }
 
     function get_active_events() {
-      $.get("http://127.0.0.1:8888/active_events", function (data, status) {
+      $.get("http://webtechstrike.com:8888/active_events", function (data, status) {
         res = JSON.parse(data);
         load_event_list(res);
       });
     }
 
     function get_past_events() {
-      $.get("http://127.0.0.1:8888/past_events", function (data, status) {
+      $.get("http://webtechstrike.com:8888/past_events", function (data, status) {
         res = JSON.parse(data);
         load_event_list(res);
       });
     }
 
     function terminate_event(event_id) {
-      $.post("http://127.0.0.1:8888/change_event_state",
+      $.post("http://webtechstrike.com:8888/change_event_state",
         {
           event_id: event_id,
           active: 0

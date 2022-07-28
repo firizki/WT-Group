@@ -84,14 +84,14 @@
         param_foods.push({ name: fn, quantity: qty })
       }
 
-      $.post("http://127.0.0.1:8888/donation",
+      $.post("http://webtechstrike.com:8888/donation",
         {
           donator_id: loginsession.id,
           event_id: id
         },
         function (data, status) {
           data = JSON.parse(data);
-          $.post("http://127.0.0.1:8888/foods",
+          $.post("http://webtechstrike.com:8888/foods",
             {
               data: JSON.stringify(param_foods),
               donation_id: data.id
@@ -188,7 +188,7 @@
       }
     }
 
-    $.get("http://127.0.0.1:8888/active_events", function (data, status) {
+    $.get("http://webtechstrike.com:8888/active_events", function (data, status) {
       res = JSON.parse(data);
       load_event_list(res);
     });

@@ -65,7 +65,7 @@
     function login() {
       email = $('#email').val();
       password = $('#password').val();
-      $.get("http://127.0.0.1:8888/login?email="+email+"&password="+password, function (data, status) {
+      $.get("http://webtechstrike.com:8888/login?email="+email+"&password="+password, function (data, status) {
         res = JSON.parse(data);
         if(res.length==1){
           localStorage.setItem("loginsession", JSON.stringify(res[0]));

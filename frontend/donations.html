@@ -70,7 +70,7 @@
 
 
 
-        $.get("http://127.0.0.1:8888/event/" + donation.event_id, function (data, status) {
+        $.get("http://webtechstrike.com:8888/event/" + donation.event_id, function (data, status) {
           event = JSON.parse(data);
 
           donation_state = '';
@@ -156,7 +156,7 @@
     }
 
     function update_food_list(donation_id) {
-      $.get("http://127.0.0.1:8888/foods?donation_id=" + donation_id, function (data, status) {
+      $.get("http://webtechstrike.com:8888/foods?donation_id=" + donation_id, function (data, status) {
         res = JSON.parse(data);
         target = $("#food_list" + donation_id)
         res.forEach(food => {
@@ -173,7 +173,7 @@
     }
 
 
-    $.get("http://127.0.0.1:8888/donations?donator_id=" + loginsession.id, function (data, status) {
+    $.get("http://webtechstrike.com:8888/donations?donator_id=" + loginsession.id, function (data, status) {
       res = JSON.parse(data);
       load_donations_list(res)
     });

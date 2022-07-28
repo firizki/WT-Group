@@ -61,7 +61,7 @@
     function login() {
       username = $('#username').val();
       password = $('#password').val();
-      $.get("http://127.0.0.1:8888/admin_login?username=" + username + "&password=" + password, function (data, status) {
+      $.get("http://webtechstrike.com:8888/admin_login?username=" + username + "&password=" + password, function (data, status) {
         res = JSON.parse(data);
         if (res.length == 1) {
           localStorage.setItem("admin", JSON.stringify(res[0]));

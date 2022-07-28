@@ -92,7 +92,7 @@
       for (let i = 0; i < donation_list_data.length; i++) {
         const donation = donation_list_data[i];
 
-        $.get("http://127.0.0.1:8888/event/" + donation.event_id, function (data, status) {
+        $.get("http://webtechstrike.com:8888/event/" + donation.event_id, function (data, status) {
           event = JSON.parse(data);
 
           donation_state = '';
@@ -179,7 +179,7 @@
     }
 
     function update_food_list(donation_id) {
-      $.get("http://127.0.0.1:8888/foods?donation_id=" + donation_id, function (data, status) {
+      $.get("http://webtechstrike.com:8888/foods?donation_id=" + donation_id, function (data, status) {
         res = JSON.parse(data);
         target = $("#food_list" + donation_id)
         res.forEach(food => {
@@ -196,7 +196,7 @@
     }
 
     function accept_donation(donation_id){
-      $.post("http://127.0.0.1:8888/accept_donation",
+      $.post("http://webtechstrike.com:8888/accept_donation",
       {
         donation_id: donation_id
       }, function (data, status) {
@@ -207,7 +207,7 @@
     }
 
     function reject_donation(donation_id){
-      $.post("http://127.0.0.1:8888/reject_donation",
+      $.post("http://webtechstrike.com:8888/reject_donation",
       {
         donation_id: donation_id
       }, function (data, status) {
@@ -218,28 +218,28 @@
     }
 
     function get_waiting() {
-      $.get("http://127.0.0.1:8888/admin_donations?state=0", function (data, status) {
+      $.get("http://webtechstrike.com:8888/admin_donations?state=0", function (data, status) {
         res = JSON.parse(data);
         load_donations_list(res);
       });
     }
 
     function get_accept() {
-      $.get("http://127.0.0.1:8888/admin_donations?state=1", function (data, status) {
+      $.get("http://webtechstrike.com:8888/admin_donations?state=1", function (data, status) {
         res = JSON.parse(data);
         load_donations_list(res);
       });
     }
 
     function get_reject() {
-      $.get("http://127.0.0.1:8888/admin_donations?state=2", function (data, status) {
+      $.get("http://webtechstrike.com:8888/admin_donations?state=2", function (data, status) {
         res = JSON.parse(data);
         load_donations_list(res);
       });
     }
 
     function get_all() {
-      $.get("http://127.0.0.1:8888/admin_donations", function (data, status) {
+      $.get("http://webtechstrike.com:8888/admin_donations", function (data, status) {
       res = JSON.parse(data);
       load_donations_list(res);
     });
